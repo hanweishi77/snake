@@ -1,0 +1,33 @@
+# coding=utf-8
+
+import turtle
+
+
+# 画方块
+def square(x, y, size, color_name):
+    """x,y为坐标位置,size为方块边长, color_name为方块填充的颜色"""
+    turtle.hideturtle()
+    turtle.tracer(False)
+    turtle.penup()
+    turtle.goto(x, y)
+    turtle.pendown()
+
+    turtle.color('red', color_name)
+    turtle.begin_fill()
+
+    turtle.forward(size)
+    turtle.left(90)
+    turtle.forward(size)
+    turtle.left(90)
+    turtle.forward(size)
+    turtle.left(90)
+    turtle.forward(size)
+    turtle.left(90)
+    turtle.end_fill()
+
+
+# 测试
+if __name__ == "__main__":
+    turtle.setup(400, 400, 100, 100)
+    square(0, 0, 10, 'red')
+    turtle.mainloop()

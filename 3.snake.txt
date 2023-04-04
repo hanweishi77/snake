@@ -1,0 +1,83 @@
+# coding=utf-8
+# snake 游戏
+"""1.增加边框
+2.修改判断吃到自己的bug
+3.增加食物生成位置判定"""
+# 导入库和函数
+import turtle
+import gamebase
+from random import randrange
+
+
+# 初始随机的苹果位置，初始蛇身体列表，初始蛇行动方向x，y
+apple_x = randrange(-19, 19)*10
+apple_y = randrange(-19, 19)*10
+snake = [[0, 0], [10, 0], [20, 0], [30, 0], [40, 0]]
+direction_x = 10
+direction_y = 0
+
+
+# 控制蛇方向
+def change(x, y):
+    global direction_x, direction_y
+    if (snake[-1][0] + x) == snake[-2][0] and (snake[-1][1]+y) == snake[-2][1]:    # 不能回缩
+        return
+    direction_x = x
+    direction_y = y
+
+
+# 判断蛇是否在地图内，在则返回True,不在则返回False
+def inside_map():
+    if -200 <= snake[-1][0] < 200 and -200 <= snake[-1][1] < 200:
+        return True
+    else:
+        return False
+
+
+# 判断蛇是否吃到自己，吃到则返回True,没吃到则返回False
+def inside_snake():
+    for n in range(len(snake)-1):
+        if snake[-1][0] == snake[n][0] and snake[-1][1] == snake[n][1]:
+            return True
+    return False
+
+
+# 游戏运行主循环
+def gameLoop():
+    global apple_x, apple_y
+    if (not inside_map()) or inside_snake():                                 # 判断是否撞墙，是否吃到自己
+        gamebase.square(snake[-1][0], snake[-1][1], 10, 'red')
+        turtle.update()
+        return
+    snake.append([snake[-1][0] + direction_x, snake[-1][1] + direction_y])   # 控制蛇移动方向逻辑
+    if snake[-1][0] != apple_x or snake[-1][1] != apple_y:                   # 蛇移动，吃食物逻辑
+        snake.pop(0)
+        print(snake[-1])
+    else:                                                        # 如果吃到苹果，则生成苹果新位置坐标
+        apple_x = randrange(-19, 19) * 10
+        apple_y = randrange(-19, 19) * 10
+        while True:                                                      # 不能在蛇身体上新生成食物
+            for n in range(len(snake)):
+                if snake[n][0] == apple_x and snake[n][1] == apple_y:
+                    apple_x = randrange(-19, 19) * 10
+                    apple_y = randrange(-19, 19) * 10
+            break
+    turtle.clear()                                                           # 清除上个循环画面
+    gamebase.square(-210, -210, 420, 'black')                                # 打印墙
+    gamebase.square(-200, -200, 400, 'white')
+    gamebase.square(apple_x, apple_y, 10, 'red')                             # 生成食物
+    for n in range(len(snake)):
+        gamebase.square(snake[n][0], snake[n][1], 10, 'black')               # 打印蛇
+    turtle.ontimer(gameLoop, 100)                             # 每300ms运行一次gameLoop，定义移动速度
+    turtle.update()
+
+
+turtle.setup(500, 500, 100, 100)
+turtle.title('贪吃蛇')
+turtle.listen()
+turtle.onkey(lambda: change(0, 10), 'w')
+turtle.onkey(lambda: change(0, -10), 's')
+turtle.onkey(lambda: change(-10, 0), 'a')
+turtle.onkey(lambda: change(10, 0), 'd')
+gameLoop()
+turtle.mainloop()
